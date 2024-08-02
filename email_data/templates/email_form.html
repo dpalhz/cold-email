@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>{% if form.email.value %}Edit Email{% else %}Create Email{% endif %}</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden m-10">
+    <div class="px-6 py-4">
+        <h1 class="text-2xl font-bold mb-4">{% if form.email.value %}Edit Email{% else %}Create Email{% endif %}</h1>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-semibold text-gray-950" for="{{ form.nama.id_for_label }}">Name</label>
+                <div class="mt-1">
+                    <input type="text" name="{{ form.nama.html_name }}" id="{{ form.nama.id_for_label }}"
+                        value="{{ form.nama.value|default_if_none:'' }}"
+                        class="input input-bordered w-full focus:border-orange-600 focus:ring-orange-600" required>
+
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-950"
+                    for="{{ form.email.id_for_label }}">Email</label>
+                <div class="mt-1">
+                    <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}"
+                        value="{{ form.email.value|default_if_none:'' }}" class="input input-bordered w-full" required>
+
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-950"
+                    for="{{ form.group.id_for_label }}">Group</label>
+                <div class="mt-1">
+                    <select name="{{ form.group.html_name }}" id="{{ form.group.id_for_label }}"
+                        class="input input-bordered w-full">
+                        {% for value, label in form.group.field.choices %}
+                        {% if form.group.value|stringformat:"s" == value|stringformat:"s" %}
+                        <option value="{{ value }}" selected>{{ label }}</option>
+                        {% else %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="submit"
+                    class="btn bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 hover:text-orange-100">Save</button>
+                <a href="{% url 'email_data:email_list' %}"
+                    class="btn bg-red-600 text-white hover:bg-red-700 hover:text-red-100 rounded-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block meta %}
+<title>Email Manager</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="m-10 text-2xl font-semibold">
+    Dashboard
+</div>
+<div class="m-10 bg-white shadow-md rounded flex">
+    <div class="w-1/4 p-4 border-r">
+        <button id="showSent"
+            class="w-full mt-10 text-gray-600 border px-4 py-2 rounded mb-2 text-left hover:border-animate  text-sm md:text-base">Sent</button>
+        <button id="showScheduled"
+            class="w-full text-gray-600 border px-4 py-2 rounded text-left hover:border-animate  text-sm md:text-base">Scheduled</button>
+    </div>
+    <div class="w-3/4 p-4">
+        <table id="emailTable" class="display m-20" style="width:100%">
+            <thead class="bg-gray-950 text-white">
+                <tr>
+                    <th class="subject-col">Subject</th>
+                    <th class="time-col">Schedule Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically loaded here -->
+            </tbody>
+        </table>
+        <div id="emailDetails" class="bg-gray-50 p-4 rounded shadow-sm hidden">
+            <div class="flex justify-between">
+                <button id="backButton"
+                    class="border btn-xs md:btn-sm btn btn-neutral rounded-lg text-white text-sm md:text-base">Back</button>
+                <div>
+                    <button id="editButton"
+                        class=" border btn-xs md:btn-sm btn bg-orange-500 hover:bg-orange-600 hover:text-orange-100 rounded-lg text-white text-sm md:text-base">Edit</button>
+                    <button onclick="showDeleteModal()" id="deleteButton"
+                        class=" border btn-xs md:btn-sm btn bg-red-600 hover:bg-red-700 hover:text-red-100 rounded-lg text-white  text-sm md:text-base">Delete</button>
+                </div>
+            </div>
+
+            <div class="text-xl font-semibold mt-5" id="emailSubject"></div>
+            <span class="font-light text-sm" id="emailScheduleTime"></span>
+            <div class="my-2"><strong>Sent to:</strong> <span id="emailDepartment"></span></div>
+            <div id="emailContent" class="ck-content my-5"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Delete Confirmation -->
+    <dialog id="my_modal_1" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Confirm Deletion</h3>
+            <p class="py-4">Are you sure you want to delete this data?</p>
+            <div class="modal-action">
+                <form method="post" id="deleteForm">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="btn bg-red-600 hover:bg-red-700 hover:text-red-100 rounded-lg text-white  text-sm md:text-base"
+                        id="confirmDeleteButton">Confirm</button>
+                    <button type="button" class="btn btn-neutral rounded-lg text-white  text-sm md:text-base"
+                        onclick="closeDeleteModal()">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+
+
+    <style>
+        .dataTables_length {
+            display: none !important;
+        }
+
+        .subject-col {
+            width: 66.66%;
+        }
+
+        .time-col {
+            width: 33.33%;
+        }
+
+        .hover\:border-animate {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hover\:border-animate::before,
+        .hover\:border-animate::after {
+            content: '';
+            position: absolute;
+            border: 2px solid black;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            transition: transform 0.5s ease;
+            transform: scaleX(0) scaleY(0);
+        }
+
+        .hover\:border-animate::before {
+            top: 0;
+            left: 0;
+            transform-origin: bottom left;
+        }
+
+        .hover\:border-animate::after {
+            bottom: 0;
+            right: 0;
+            transform-origin: top right;
+        }
+
+        .hover\:border-animate:hover::before,
+        .hover\:border-animate:hover::after {
+            transform: scaleX(1) scaleY(1);
+        }
+
+        .dt-search label {
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .dt-search input[type="search"]:focus {
+            border-color: #DD6B20;
+            outline: none;
+            box-shadow: 0 0 0 1px #DD6B20;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('#editButton').hide();
+            let emailTable = $('#emailTable').DataTable({
+                paging: true,
+                searching: true,
+                pageLength: 10,
+                ordering: true,
+                info: false,
+                lengthChange: false,
+                language: {
+                    "paginate": {
+                        "previous": "Prev",
+                        "next": "Next"
+                    }
+                },
+                ajax: {
+                    url: '/emails/sent/',
+                    dataSrc: 'emails'
+                },
+                columns: [
+                    { data: 'subject' },
+                    { data: 'schedule_time' }
+                ]
+            });
+
+            $('#showSent').click(function () {
+                emailTable.ajax.url('/emails/sent/').load();
+                $('#emailTable_wrapper').removeClass('hidden');
+                $('#emailDetails').addClass('hidden');
+                $('#editButton').hide();
+            });
+
+            $('#showScheduled').click(function () {
+                emailTable.ajax.url('/emails/scheduled/').load();
+                $('#emailTable_wrapper').removeClass('hidden');
+                $('#emailDetails').addClass('hidden');
+                $('#editButton').show();
+            });
+
+            $('#emailTable tbody').on('click', 'tr', function () {
+                let data = emailTable.row(this).data();
+                fetchEmailDetails(data.id);
+            });
+
+            function fetchEmailDetails(id) {
+                $('#emailTable_wrapper').addClass('hidden');
+                $.ajax({
+                    url: `/emails/detail/${id}/`,
+                    method: 'GET',
+                    success: function (data) {
+                        $('#emailDepartment').text(data.department);
+                        $('#emailSubject').text(data.subject);
+                        $('#emailContent').html(data.content);
+                        $('#emailScheduleTime').text(data.schedule_time);
+                        $('#emailDetails').removeClass('hidden');
+
+                        $('#backButton').click(function () {
+                            $('#emailDetails').addClass('hidden');
+                            $('#emailTable_wrapper').removeClass('hidden');
+                        });
+
+                        // Set the delete form action URL to include the email ID
+                        $('#deleteForm').attr('action', `/emails/delete/${id}/`);
+
+                        $('#editButton').off('click').on('click', function () {
+                            window.location.href = `/edit-schedule-email/${id}/`;
+                        });
+                    }
+                });
+            }
+
+            $('#deleteForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+                const form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            closeDeleteModal();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: 'The email has been deleted successfully.',
+                                confirmButtonColor: '#DD6B20'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message,
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'An error occurred while deleting the email. Please try again.',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                });
+            });
+        });
+
+        function showDeleteModal() {
+            const deleteModal = document.getElementById('my_modal_1');
+            deleteModal.showModal();
+        }
+
+        function closeDeleteModal() {
+            const deleteModal = document.getElementById('my_modal_1');
+            deleteModal.close();
+        }
+    </script>
+</div>
+{% endblock content %}

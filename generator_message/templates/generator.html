@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Generator Message</title>
+{% endblock meta %}
+
+{% block content %}
+
+<div class="m-10 text-2xl font-semibold">
+    Message Generator
+</div>
+<div class="m-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Form Section -->
+    <div class="md:col-span-1 col-span-2">
+        <form id="message-form" class="space-y-4 flex flex-col justify-center w-full">
+            {% csrf_token %}
+            <div>
+                <label for="subject" class="block text-sm font-semibold text-gray-950">Subject</label>
+                <input type="text" name="subject" placeholder="" class="input input-bordered w-full max-w-xs"
+                    id="subject">
+            </div>
+            <div>
+                <label for="sendto" class="block text-sm font-semibold text-gray-950">Send To</label>
+                <select class="select select-accent w-full max-w-xs" name="sendto" id="sendto">
+                    <option disabled selected>To whom you send this email</option>
+                    <option value="HR">Devisi HR</option>
+                    <option value="RnD">Devisi RnD</option>
+                    <option value="Media">Devisi Media Informasi</option>
+                    <option value="Engineering">Devisi Engineering</option>
+                    <option value="Customers">Customers</option>
+                </select>
+            </div>
+            <div>
+                <label for="mode" class="block text-sm font-semibold text-gray-950">Modes</label>
+                <select class="select select-accent w-full max-w-xs" id="mode" name="mode">
+                    <option disabled selected>Choose your mail's mode</option>
+                    <option value="formal">Formal</option>
+                    <option value="casual">Casual</option>
+                    <option value="persuasive">Persuasive</option>
+                    <option value="standard">Standard</option>
+                    <option value="creative">Creative</option>
+                </select>
+            </div>
+            <div>
+                <label for="language" class="block text-sm font-semibold text-gray-950">Language</label>
+                <select class="select select-accent w-full max-w-xs" id="language" name="language">
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <div>
+                <label for="email_detail" class="block text-sm font-semibold text-gray-950">Email's Detail</label>
+                <textarea type="text" class="textarea input-bordered w-full max-w-xs" placeholder="" id="email_detail"
+                    name="email_detail" rows="5"></textarea>
+            </div>
+
+            <div>
+                <button type="button"
+                    class="btn bg-orange-500 hover:bg-orange-600 hover:text-orange-100 rounded-lg text-white"
+                    onclick="sendMessage()">Generate
+                    Messages</button>
+            </div>
+        </form>
+    </div>
+    <div class="md:col-span-2 flex relative bg-gray-100 rounded-xl">
+        <div class="m-4 w-full">
+            <span class="font-semibold">Message :</span>
+            <form enctype="multipart/form-data" class="mt-5">
+                <div class="row align-items-center">
+                    {% csrf_token %}
+                    {{ form.media }}
+                    <div class="col">
+                        {{ form.content }}
+                    </div>
+                    <div class="col-auto">
+                        <label for="schedule_time" class="block text-sm font-semibold text-gray-950 mt-3">Time
+                            Sending</label>
+                        <input type="datetime-local" name="{{ form.schedule_time.html_name }}"
+                            id="{{ form.schedule_time.id_for_label }}" class="input input-bordered max-w-xs"
+                            value="{{ form.schedule_time.value|default_if_none:'' }}" required>
+                    </div>
+
+                    <div class="col-auto hidden">
+                        <label for="schedule_time" class="block text-sm font-semibold text-gray-950">Subject</label>
+                        <input type="text" name="{{ form.subject.html_name }}" id="{{ form.subject.id_for_label }}"
+                            class="input input-bordered max-w-xs" value="{{ form.subject.value|default_if_none:'' }}"
+                            required>
+                    </div>
+                </div>
+                <div class="flex justify-end absolute bottom-0 right-0 m-5">
+                    <button type="submit"
+                        class="btn bg-orange-500 hover:bg-orange-600 hover:text-orange-100 rounded-lg text-white"
+                        id="send-email-btn">Send Email</button>
+                </div>
+            </form>
+
+            <div placeholder="Prompting Result" id="response" name="response" rows="4" cols="50"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+    async function sendMessage() {
+        const subject = document.getElementById('subject').value;
+        const sendto = document.getElementById('sendto').value;
+        const mode = document.getElementById('mode').value;
+        const email_detail = document.getElementById('email_detail').value;
+        const language = document.getElementById('language').value;
+        const message = {
+            'subject': subject,
+            'sendto': sendto,
+            'mode': mode,
+            'email_detail': email_detail,
+            'language': language,
+            'company_name': "Algo Network"
+        };
+
+        // Fetch the CSRF token from the CSRF input field
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        const response = await fetch('{% url "generator_message:chat" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Ensure the CSRF token is added here
+            },
+            body: JSON.stringify({ message })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let result = '';
+
+        try {
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                result += decoder.decode(value);
+                const cleanedResult = result.replace(/\n/g, '<br>');
+                const formattedResult = marked.parse(cleanedResult);
+                CKEDITOR.instances['id_content'].setData(formattedResult);
+            }
+        } catch (error) {
+            console.error('end stream');
+        }
+    }
+
+    $('#send-email-btn').click(function (e) {
+        e.preventDefault();
+        var department = $('#sendto').val();
+        var subject = $('#subject').val();
+        var content = CKEDITOR.instances['id_content'].getData();
+        var scheduleTime = $('#id_schedule_time').val();
+
+        console.log(department)
+        console.log(subject)
+        console.log(content)
+        console.log(scheduleTime)
+
+        var formData = new FormData();
+        formData.append('department', department);
+        formData.append('subject', subject);
+        formData.append('content', content);
+        formData.append('schedule_time', scheduleTime);
+
+        var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        $.ajax({
+            url: '{% url "sendingemail:schedule_email" %}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            success: function (response) {
+                console.log(response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                        confirmButtonColor: '#DD6B20'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: "There was an error. Please try again.",
+                        confirmButtonColor: '#d33'
+                    });
+                }
+
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "There was an error. Please try again.",
+                    confirmButtonColor: '#d33'
+                });
+            }
+        });
+    });
+</script>
+{% endblock content %}

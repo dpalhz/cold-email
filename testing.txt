@@ -1,0 +1,41 @@
+user_input = {
+    'subject': 'Pemberitahuan Kebijakan Cuti Baru',
+    'sendto': 'HR',
+    'mode': 'formal',
+    'language': 'id',
+    'email_detail': 'Pemberitahuan tentang kebijakan cuti baru yang akan mulai berlaku pada bulan depan. Kebijakan ini bertujuan untuk memberikan keseimbangan kerja dan kehidupan yang lebih baik bagi semua karyawan.'
+}
+
+user_input = {
+    'subject': 'Rapat Evaluasi Proyek RnD Terbaru',
+    'sendto': 'RnD',
+    'mode': 'standard',
+    'language': 'id',
+    'email_detail': 'Pemberitahuan rapat evaluasi untuk proyek RnD terbaru yg akan diadakan pada hari Jumat, pukul 10.00. Mohon hadir tepat waktu dan membawa laporan kemajuan masing-masing tim.'
+}
+
+user_input = {
+    'subject': 'Pengumuman Peluncuran Kampanye Media Baru',
+    'sendto': 'Media',
+    'mode': 'creative',
+    'language': 'id',
+    'email_detail': 'Pembuatan campaign baru akan dimulai minggu depan. Kampanye ini akan mencakup berbagai platform media sosial dan saluran informasi lainnya. Mohon semua tim media untuk siap berkoordinasi.'
+}
+
+user_input = {
+    'subject': 'Pembaruan Sistem IT Perusahaan',
+    'sendto': 'Engineering',
+    'mode': 'casual',
+    'language': 'id',
+    'email_detail': 'Pemberitahuan ttg pembaruan sistem IT perusahaan pada akhir pekan ini. Mohon pastikan semua data penting sudah di-backup dan bersiap untuk downtime selama beberapa jam.'
+}
+
+user_input = {
+    'subject': 'Penawaran Spesial Bulan Ini untuk Pelanggan Setia',
+    'sendto': 'Customers',
+    'mode': 'persuasive',
+    'language': 'id',
+    'email_detail': 'Dapatkan diskon hingga 20% untuk semua layanan kami. hubungi kami untuk informasi lebih lanjut dan manfaatkan penawaran ini sebelum berakhir"
+}
+
+https://storage.googleapis.com/algonetwork/logo%20v1%20white%404x.png
