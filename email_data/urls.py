@@ -10,4 +10,7 @@ urlpatterns = [
     path('email/<str:email>/delete/', views.email_delete, name='email_delete'),
     path('api/emails/', views.get_all_emails, name='get_all_emails'),
     path('api/emails/department/<str:department>/', views.get_emails_by_department, name='get_emails_by_department'),
+    path('department/create/', views.create_department, name='department_create'),
+    path('department/edit/<uuid:pk>/', views.edit_department, name='department_edit'),
+    path('department/delete/<uuid:pk>/', views.delete_department, name='department_delete'),
 ]

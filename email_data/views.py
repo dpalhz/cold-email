@@ -1,14 +1,51 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import EmailDataForm
 from django.http import JsonResponse
-from .models import EmailData
+from .models import EmailData, Department
 from django.contrib.admin.views.decorators import staff_member_required
 
+from .forms import EmailDataForm, DepartmentForm
+@staff_member_required(login_url='/auth/login/')
+def create_department(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'message': 'Department created successfully!'}, status=200)
+        else:
+            return JsonResponse({'errors': form.errors}, status=400)
+
+@staff_member_required(login_url='/auth/login/')
+def edit_department(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    else:
+        # Untuk permintaan GET, berikan data department dalam bentuk JSON
+        department_data = {
+            'nama': department.nama,
+            'deskripsi': department.deskripsi,
+        }
+        return JsonResponse(department_data)
+
+@staff_member_required(login_url='/auth/login/')
+def delete_department(request, pk):
+    try:
+        department = get_object_or_404(Department, pk=pk)
+        department.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 @staff_member_required(login_url='/auth/login/')
 def email_list(request):
     emails = EmailData.objects.all()
-    return render(request, 'email_list.html', {'emails': emails})
+    department = Department.objects.all()
+    return render(request, 'email_list.html', {'emails': emails, 'departments' : department})
 
 @staff_member_required(login_url='/auth/login/')
 def email_detail(request, email):
@@ -56,3 +93,4 @@ def get_all_emails(request):
 def get_emails_by_department(request, department):
     emails = EmailData.objects.filter(group=department).values('nama', 'email', 'created_at', 'updated_at', 'group')
     return JsonResponse(list(emails), safe=False)
+

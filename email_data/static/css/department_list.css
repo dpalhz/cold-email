@@ -1,0 +1,19 @@
+/* Pastikan item <li> bisa relative untuk deskripsi yang absolute */
+#departmentList li {
+    position: relative;
+}
+
+/* Hover effect untuk menampilkan deskripsi */
+#departmentList li:hover .hover-description {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.hover-description {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+}

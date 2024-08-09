@@ -42,6 +42,13 @@ celery -A coldemail beat -l info # untuk logging check celery
 
 ---
 
+### Cara reset DB, solve model issue
+
+```
+python manage.py flush
+
+```
+
 ## Registrasi Akun Staf pada Algo Network
 
 #### Deskripsi Singkat

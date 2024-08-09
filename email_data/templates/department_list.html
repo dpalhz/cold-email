@@ -1,0 +1,74 @@
+{% load static %}
+
+
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/department_list.css' %}" />
+{% endblock style %}
+
+
+<div class="text-2xl font-semibold m-10">Department</div>
+<ul id="departmentList" class="m-10">
+  {% for department in departments %}
+  <li class="relative flex items-center justify-between bg-gray-100 p-2 rounded-lg mb-2 hover:bg-gray-200"
+    data-nama="{{ department.nama }}" data-deskripsi="{{ department.deskripsi }}">
+    <span>{{ department.nama }}</span>
+    <div class="flex items-center space-x-2">
+      <button class="editButton" data-id="{{ department.id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
+          <path
+            d="M3 17.25V27h9.75l11.53-11.52L14.53 5.74 3 17.25zm26.11-9.6l-4.75-4.75a2.494 2.494 0 00-3.54 0L17 6.82l8.76 8.76 3.8-3.8a2.494 2.494 0 000-3.54z" />
+        </svg>
+      </button>
+      <button class="deleteButton" data-id="{{ department.id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
+          <path
+            d="M3.75 7.25H26.25V9H3.75V7.25zM6.25 9.75V24.25C6.25 25.49 7.26 26.5 8.5 26.5H21.5C22.74 26.5 23.75 25.49 23.75 24.25V9.75H6.25zM11.25 12.75H13.25V23.25H11.25V12.75zM16.75 12.75H18.75V23.25H16.75V12.75z" />
+        </svg>
+      </button>
+    </div>
+    <!-- Deskripsi Department -->
+    <div
+      class="hover-description absolute left-0 top-full mt-1 bg-white p-2 rounded-lg shadow-md transition-opacity duration-300 ease-in-out opacity-0 pointer-events-none">
+      {{ department.deskripsi }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+
+
+<a href="#" id="createDepartmentButton"
+  class="btn btn-base bg-orange-500 hover:bg-orange-600 hover:text-orange-100 ml-10 mb-10 text-white rounded-lg">
+  +
+</a>
+
+<div id="createDepartmentFormContainer" class="mx-10 border rounded-md p-6 bg-gray-100 shadow-md mb-10"
+  style="display: none;">
+  <h2 id="formTitle" class="text-lg font-semibold mb-4">Create Department</h2>
+  <form id="createDepartmentForm" method="post">
+    {% csrf_token %}
+    <div class="mb-4">
+      <label for="id_nama" class="block text-sm font-semibold text-gray-950">Nama Department</label>
+      <input type="text" name="nama" id="id_nama" class="input input-bordered w-full max-w-xs" required />
+    </div>
+    <div class="mb-4">
+      <label for="id_deskripsi" class="block text-sm font-semibold text-gray-950">Deskripsi</label>
+      <input type="text" name="deskripsi" id="id_deskripsi" class="input input-bordered w-full max-w-xs" required />
+    </div>
+    <div class="flex gap-1">
+      <button id="modeSubmit" type="submit"
+        class="btn btn-base bg-orange-500 hover:bg-orange-600 hover:text-orange-100 mb-10 text-white rounded-lg">
+        Save
+      </button>
+      <button type="button" id="cancelCreateDepartmentButton"
+        class="btn bg-red-600 text-white hover:bg-red-700 hover:text-red-100 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/department_list.js' %}"></script>
