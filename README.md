@@ -49,25 +49,6 @@ python manage.py flush
 
 ```
 
-## Registrasi Akun Staf pada Algo Network
-
-#### Deskripsi Singkat
-
-Bagian ini menjelaskan proses registrasi akun tipe staf pada aplikasi Algo Network. Hanya pengguna dengan peran superuser yang memiliki akses untuk membuat akun staf. Akun staf memungkinkan pengguna untuk masuk ke dalam web Algo Network.
-
-#### Penjelasan Registrasi Akun Staf
-
-1. **Akses Halaman Registrasi**:
-
-   - Superuser akses ke halaman registrasi (buat akun staf) di web Algo Network.
-   - Halaman registrasi hanya dapat diakses oleh pengguna yang telah login dengan akun superuser.
-
-2. **Akses Akun Staf**:
-   - Setelah registrasi berhasil, pengguna dapat menggunakan akun staf untuk masuk ke dalam web Algo Network.
-   - Pengguna dapat mengakses fitur dan fungsionalitas tertentu yang tersedia dalam aplikasi.
-
----
-
 ## Standar Commit
 
 Dengan format di atas, instruksi akan lebih mudah dipahami dan diikuti, serta standar commit akan membantu menjaga konsistensi dan kualitas riwayat commit dalam proyek ini.
