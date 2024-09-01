@@ -56,7 +56,7 @@ def send_to_openai(user_input):
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt_text}
         ],
-        stream=True
+        # stream=True
     )
 
     return response
@@ -81,8 +81,10 @@ def chat(request):
     return JsonResponse({'response': 'Invalid request'}, status=400)
 
 from sendingemail.forms import EmailScheduleForm
+from email_data.models import Department
 
 @staff_member_required(login_url='/auth/login/')
 def generator_view(request):
     form = EmailScheduleForm()
-    return render(request, 'generator.html', {'form': form})
+    departments = Department.objects.all()
+    return render(request, 'generator.html', {'form': form, 'departments': departments})

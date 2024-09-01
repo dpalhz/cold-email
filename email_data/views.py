@@ -1,7 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import EmailData, Department
 from django.contrib.admin.views.decorators import staff_member_required
+
+from django.contrib import messages
+import pandas as pd
+from django.core.files.storage import default_storage
+import os
+
 
 from .forms import EmailDataForm, DepartmentForm
 @staff_member_required(login_url='/auth/login/')
@@ -94,3 +100,62 @@ def get_emails_by_department(request, department):
     emails = EmailData.objects.filter(group=department).values('nama', 'email', 'created_at', 'updated_at', 'group')
     return JsonResponse(list(emails), safe=False)
 
+
+def bulk_add_email(request):
+    if request.method == "POST":
+        file = request.FILES.get('file')
+        if not file:
+            messages.error(request, "No file uploaded.")
+            return redirect('email_data:email_list')
+
+        file_extension = os.path.splitext(file.name)[1].lower()
+        if file_extension not in ['.csv', '.xls', '.xlsx']:
+            messages.error(request, "Unsupported file format. Please upload a CSV or Excel file.")
+            return redirect('email_data:email_list')
+
+        try:
+            # Process the file directly from memory
+            if file_extension == '.csv':
+                df = pd.read_csv(file)
+            else:  # Assuming it's an Excel file
+                df = pd.read_excel(file)
+
+            # Validate the columns
+            required_columns = {'nama', 'email', 'department'}
+            if not required_columns.issubset(df.columns):
+                messages.error(request, "The uploaded file is missing required columns.")
+                return redirect('email_data:email_list')
+
+            for _, row in df.iterrows():
+                department_name = row.get('department', '')
+                department, created = Department.objects.get_or_create(nama=department_name)
+                EmailData.objects.create(
+                    nama=row.get('nama', ''),
+                    email=row.get('email', ''),
+                    department=department
+                )
+
+            messages.success(request, "Emails added successfully!")
+
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+
+    return redirect('email_data:email_list')
+
+
+
+def download_template(request):
+    # Create a DataFrame for the Excel template
+    data = {
+        'nama': ['John Doe', 'Jane Smith'],
+        'email': ['john@example.com', 'jane@example.com'],
+        'department': ['IT', 'HR']
+    }
+    df = pd.DataFrame(data)
+
+    # Convert DataFrame to an Excel file in memory
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=email_template.xlsx'
+    df.to_excel(response, index=False)
+
+    return response

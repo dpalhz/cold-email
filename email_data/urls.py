@@ -13,4 +13,6 @@ urlpatterns = [
     path('department/create/', views.create_department, name='department_create'),
     path('department/edit/<uuid:pk>/', views.edit_department, name='department_edit'),
     path('department/delete/<uuid:pk>/', views.delete_department, name='department_delete'),
+    path('bulk-add-email/', views.bulk_add_email, name='bulk_add_email'),
+    path('download-template/', views.download_template, name='download_template'),
 ]

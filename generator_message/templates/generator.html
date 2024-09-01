@@ -23,13 +23,12 @@
                 <label for="sendto" class="block text-sm font-semibold text-gray-950">Send To</label>
                 <select class="select select-accent w-full max-w-xs" name="sendto" id="sendto">
                     <option disabled selected>To whom you send this email</option>
-                    <option value="HR">Devisi HR</option>
-                    <option value="RnD">Devisi RnD</option>
-                    <option value="Media">Devisi Media Informasi</option>
-                    <option value="Engineering">Devisi Engineering</option>
-                    <option value="Customers">Customers</option>
+                    {% for department in departments %}
+                    <option value="{{ department.nama }}">{{ department.nama }}</option>
+                    {% endfor %}
                 </select>
             </div>
+
             <div>
                 <label for="mode" class="block text-sm font-semibold text-gray-950">Modes</label>
                 <select class="select select-accent w-full max-w-xs" id="mode" name="mode">
