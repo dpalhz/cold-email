@@ -116,9 +116,9 @@ WSGI_APPLICATION = 'coldemail.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'algonetwork',  # Nama database
+        'NAME': 'dbname',  # Nama database
         'USER': 'postgres',  # Nama user
-        'PASSWORD': 'algonetwork',  # Password user
+        'PASSWORD': 'dbpassword',  # Password user
         'HOST': 'localhost',  # Host database
         'PORT': '5432',  # Port database
     }

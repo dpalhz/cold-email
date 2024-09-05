@@ -40,7 +40,7 @@ def get_email_details(request, pk):
     email = get_object_or_404(EmailSchedule, pk=pk)
     email_details = {
         'id': str(email.id),
-        'department': email.department,
+        'department': email.department.nama,
         'subject': email.subject,
         'content': email.content,
         'schedule_time': format_schedule_time(email.schedule_time).strftime("%d-%m-%Y %H:%M:%S")
@@ -52,7 +52,6 @@ def edit_schedule_email_view(request, pk):
     email_schedule = get_object_or_404(EmailSchedule, pk=pk)
     if email_schedule.status_sent:
         return JsonResponse({'success': False, 'errors': form.errors})
-
 
     old_department = email_schedule.department
     old_schedule_time = email_schedule.schedule_time
@@ -78,17 +77,17 @@ def edit_schedule_email_view(request, pk):
             )
 
             # Get the old periodic task and update it
-            old_task_name = f"Send email to {old_department} at {format_schedule_time(old_schedule_time)} - ID: {email_schedule.id}"
+            old_task_name = f"Send email to {old_department.nama} at {format_schedule_time(old_schedule_time)} - ID: {email_schedule.id}"
             periodic_task = get_object_or_404(PeriodicTask, name=old_task_name)
             
             # Save changes to email_schedule first
             email_schedule.save()
 
             # Update the name, crontab, args, and expiration
-            new_task_name = f"Send email to {email_schedule.department} at {format_schedule_time(schedule_time)} - ID: {email_schedule.id}"
+            new_task_name = f"Send email to {email_schedule.department.nama} at {format_schedule_time(schedule_time)} - ID: {email_schedule.id}"
             periodic_task.name = new_task_name
             periodic_task.crontab = schedule
-            periodic_task.args = json.dumps([email_schedule.department, email_schedule.subject, email_schedule.content, str(email_schedule.id)])
+            periodic_task.args = json.dumps([email_schedule.department.nama, email_schedule.subject, email_schedule.content, str(email_schedule.id)])  # Use department.nama instead of department
             periodic_task.expires = schedule_time + timezone.timedelta(minutes=10)
             periodic_task.save()
 
@@ -98,6 +97,7 @@ def edit_schedule_email_view(request, pk):
     else:
         form = EmailScheduleForm(instance=email_schedule)
     return render(request, 'edit_schedule_email.html', {'form': form, 'email_schedule': email_schedule})
+
 
 @staff_member_required(login_url='/auth/login/')
 @csrf_exempt

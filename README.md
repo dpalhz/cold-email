@@ -1,156 +1,195 @@
 # Django Project
 
-## Langkah untuk Menjalankan di Lokal
+## Steps to Run Locally
 
-### 1. Membuat Database Gambar di Lokal (PostgreSQL)
+### 1. Set Up a Virtual Environment
 
-Jalankan perintah berikut untuk memulai layanan Docker yang akan membuat dan mengkonfigurasi database PostgreSQL:
+Before installing any dependencies, it's a best practice to isolate your project dependencies using a virtual environment. This will prevent conflicts between packages across different projects.
+
+1.  **Create a virtual environment**: Run the following command to create a virtual environment in the project folder:
+
+    ```sh
+    python -m venv env
+    ```
+
+    This will create a directory called `env` that contains the environment for your project.
+
+2.  **Activate the virtual environment**:
+
+    - **On Windows**:
+
+    ```sh
+        .\env\Scripts\activate
+
+        or
+
+        cd .\env\Scripts\
+        .\activate
+        cd ..\..
+    ```
+
+    - **On macOS/Linux**:
+
+      ```sh
+      source env/bin/activate
+      ```
+
+    After activating, your terminal prompt should change, showing that you're now working within the `env` virtual environment.
+
+3.  **Install the project dependencies** from the `requirements.txt` file:
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+---
+
+### 2. Set Up Environment Variables
+
+Create a `.env` file in the root of the project and add your environment-specific settings such as database credentials, API keys, and other sensitive information:
+
+```plaintext
+OPENAI_API_KEY=
+EMAIL_BACKEND=
+EMAIL_USE_TLS=
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+DEFAULT_FROM_EMAIL=
+```
+
+---
+
+### 3. Create a Local Database Image (PostgreSQL)
+
+If you are using Docker, set up PostgreSQL by running:
 
 ```sh
 docker-compose up
 ```
 
-### 2. Menjalankan Tailwind CSS
+Ensure that the database credentials in your `.env` file match the database setup in Docker.
 
-Jalankan perintah berikut untuk memulai proses pengembangan Tailwind CSS:
+---
+
+### 4. Run Tailwind CSS
+
+Run the following command to start the Tailwind CSS development process:
 
 ```sh
 python manage.py tailwind start
 ```
 
-### 3. Menjalankan Server Web Django
+---
 
-Jalankan perintah berikut untuk memulai server pengembangan Django:
+### 5. Apply Migrations and Create Superuser
+
+Apply database migrations to create the necessary tables:
+
+```sh
+python manage.py migrate
+```
+
+Create a superuser for admin access:
+
+```sh
+python manage.py createsuperuser
+```
+
+---
+
+### 6. Run the Django Development Server
+
+Now, you can start the Django web server:
 
 ```sh
 python manage.py runserver
 ```
 
-### 4. Menjalankan Celery
+Access the web application in your browser:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+### 7. Run Celery
+
+To handle background tasks like email scheduling, start the **Celery worker**:
 
 ```sh
+celery -A coldemail worker --pool=solo -l info
+```
 
-cd .\env\Scripts\
-.\activate
-cd ..\..
+You can also run **Celery beat** to manage scheduled tasks:
 
-celery -A coldemail worker --pool=solo -l info # untuk running worker
-
-celery -A coldemail beat -l info # untuk logging check celery
-
+```sh
+celery -A coldemail beat -l info
 ```
 
 ---
 
-### Cara reset DB, solve model issue
+### How to Reset the Database
 
-```
+If you need to reset the database, use the following command:
+
+```sh
 python manage.py flush
-
 ```
 
-## Registrasi Akun Staf pada Algo Network
-
-#### Deskripsi Singkat
-
-Bagian ini menjelaskan proses registrasi akun tipe staf pada aplikasi Algo Network. Hanya pengguna dengan peran superuser yang memiliki akses untuk membuat akun staf. Akun staf memungkinkan pengguna untuk masuk ke dalam web Algo Network.
-
-#### Penjelasan Registrasi Akun Staf
-
-1. **Akses Halaman Registrasi**:
-
-   - Superuser akses ke halaman registrasi (buat akun staf) di web Algo Network.
-   - Halaman registrasi hanya dapat diakses oleh pengguna yang telah login dengan akun superuser.
-
-2. **Akses Akun Staf**:
-   - Setelah registrasi berhasil, pengguna dapat menggunakan akun staf untuk masuk ke dalam web Algo Network.
-   - Pengguna dapat mengakses fitur dan fungsionalitas tertentu yang tersedia dalam aplikasi.
+This will delete all data in the database but leave the schema intact.
 
 ---
 
-## Standar Commit
+Here’s a detailed description of your project that you can include in the README file to explain the functionality of your cold email automation web service:
 
-Dengan format di atas, instruksi akan lebih mudah dipahami dan diikuti, serta standar commit akan membantu menjaga konsistensi dan kualitas riwayat commit dalam proyek ini.
+---
 
-## Commit Standard
+## Project Overview
 
-source : https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/
+This project is a **Cold Email Automation Web Service** designed to streamline email communication, particularly for internal use by businesses. The service integrates with **ChatGPT** to generate personalized email content based on predefined input parameters. It features several functionalities aimed at enhancing productivity and efficiency in managing bulk email campaigns, scheduling, and customization.
 
-Conventional Commits
-Now that we've covered basic commit structure of a good commit message, I'd like to introduce Conventional Commits to help provide some detail on creating solid commit messages.
+### Key Features
 
-At D2iQ, we use Conventional Commit which is a great practice among engineering teams. Conventional Commit is a formatting convention that provides a set of rules to formulate a consistent commit message structure like so:
+1. **ChatGPT-Generated Email Content**:
+   - Users can generate email content using personalized input based on specific groups or departments (e.g., HR, R&D).
+   - The email content is optimized for different tones such as formal, casual, or persuasive, depending on the user's input.
+2. **Dashboard for Email Management**:
 
-```
-    <type>[optional scope]: <description>
+   - A comprehensive dashboard allows users to view:
+     - **Sent Emails**: A list of successfully delivered emails.
+     - **Scheduled Emails**: Emails that are scheduled for future delivery. This feature provides the ability to edit or reschedule them before the scheduled sending time.
 
-    [optional body]
+3. **Message Generator**:
 
-    [optional footer(s)]
+   - A generator page allows users to create email content, which can be personalized and bulk-sent to different departments.
+   - It also includes scheduling options, allowing users to set the exact time when the email should be sent.
 
-```
+4. **Bulk and Manual Email Data Input**:
 
-The commit type can include the following:
+   - Users can input email data either manually, one by one, or upload a CSV/Excel file to handle large batches of emails.
+   - The system supports department customization, allowing departments to be created and assigned to emails.
 
-- `feat`: Introduces a new feature with the changes.
-- `fix`: Indicates a bug fix has occurred.
-- `chore`: Covers changes that are unrelated to a fix or feature and don't modify src or test files, such as updating dependencies.
-- `refactor`: Refactors code without fixing a bug or adding a feature.
-- `docs`: Updates to documentation such as the README or other markdown files.
-- `style`: Changes that do not affect the meaning of the code, often related to code formatting like white-space or missing semi-colons.
-- `test`: Includes new or corrected tests.
-- `perf`: Indicates performance improvements.
-- `ci`: Related to continuous integration.
-- `build`: Changes that affect the build system or external dependencies.
-- `revert`: Reverts a previous commit.
+5. **Department Customization**:
 
-The commit type subject line should be all lowercase with a character limit to encourage succinct descriptions.
+   - Administrators can manually create or modify departments within the system, which helps segment and target specific groups of email recipients.
 
-The optional commit body should be used to provide further detail that cannot fit within the character limitations of the subject line description.
+6. **Security**:
 
-It is also a good location to utilize BREAKING CHANGE: `<description>` to note the reason for a breaking change within the commit.
+   - For security reasons, only **superusers** are allowed to register new staff accounts.
+   - This ensures that the platform remains secure and only authorized personnel have access.
 
-The footer is also optional. We use the footer to link the JIRA story that would be closed with these changes for example: `Closes D2IQ-<JIRA #>`.
+7. **HTML Email Formatting**:
+   - All outgoing emails are formatted in **HTML**, ensuring that they are visually appealing and maintain a professional appearance.
 
-Full Conventional Commit Example
+### Usage
 
-```
-    fix: fix foo to enable bar
+This service is specifically designed for businesses to automate internal and external email communication. By leveraging AI-generated content, businesses can save time, improve engagement, and ensure the personalization of their emails to specific audiences.
 
-    This fixes the broken behavior of the component by doing xyz.
+---
 
-    BREAKING CHANGE
-    Before this fix foo wasn't enabled at all, behavior changes from <old> to <new>
+## License
 
-    Closes D2IQ-12345
-```
-
-### Commit Message Comparisons
-
-Review the following messages and see how many of the suggested guidelines they check off in each category.
-
-**Good:**
-
-1. `feat: improve performance with lazy load implementation for images`
-2. `chore: update npm dependency to latest version`
-3. `Fix bug preventing users from submitting the subscribe form`
-4. `Update incorrect client phone number within footer body per client request`
-
-**Bad:**
-
-1. `fixed bug on landing page`
-2. `Changed style`
-3. `oops`
-4. `I think I fixed it this time?`
-5. _empty commit messages_
-
-Writing good commit messages is an extremely beneficial skill to develop, and it helps you communicate and collaborate with your team. Commits serve as an archive of changes. They can become an ancient manuscript to help us decipher the past, and make reasoned decisions in the future.
-
-# Deskripsi Fitur
-
-## Generator Email (FE + BE)
-
-Pastikan telah melakukan migrasi terlebih dahulu:
-python manage.py makemigrations
-python manage.py migrate
-Fitur ini memungkinkan user untuk memasukkan inputan prompt untuk membuat email.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

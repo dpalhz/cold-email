@@ -6,6 +6,8 @@ from .models import EmailSchedule
 from .tasks import send_department_emails_now
 from .forms import EmailScheduleForm 
 from django.contrib.admin.views.decorators import staff_member_required
+from email_data.models import Department
+
 
 @staff_member_required(login_url='/auth/login/')
 def send_email_now(request, department, subject, content):
@@ -17,12 +19,13 @@ def schedule_email_post(request):
     if request.method == 'POST':
         form = EmailScheduleForm(request.POST)
         
-        department = request.POST.get('department')
+        department_name = request.POST.get('department')
         subject = request.POST.get('subject')
         content = request.POST.get('content')
         schedule_time_str = request.POST.get('schedule_time')
+        
         if not schedule_time_str:
-            return send_email_now(request, department, subject, content)
+            return send_email_now(request, department_name, subject, content)
         else:
             try:
                 schedule_time = timezone.datetime.fromisoformat(schedule_time_str)
@@ -30,9 +33,15 @@ def schedule_email_post(request):
             except ValueError as e:
                 return JsonResponse({'success': False, 'errors': 'Invalid datetime format'})
             
+            # Find the Department instance
+            try:
+                department = Department.objects.get(nama=department_name)
+            except Department.DoesNotExist:
+                return JsonResponse({'success': False, 'errors': 'Department not found'})
+            
             # Save EmailSchedule
             email_schedule = EmailSchedule.objects.create(
-                department=department,
+                department=department,  # Use the Department instance here
                 subject=subject,
                 content=content,
                 schedule_time=schedule_time,
@@ -52,9 +61,9 @@ def schedule_email_post(request):
             )
             PeriodicTask.objects.create(
                 crontab=schedule,
-                name=f"Send email to {department} at {schedule_time} - ID: {email_schedule.id}",
+                name=f"Send email to {department.nama} at {schedule_time} - ID: {email_schedule.id}",
                 task='sendingemail.tasks.send_department_emails',
-                args=json.dumps([department, subject, content, str(email_schedule.id)]),
+                args=json.dumps([department.nama, subject, content, str(email_schedule.id)]),  # Use department.nama instead of department
                 expires=schedule_time + timezone.timedelta(minutes=10)
             )
             

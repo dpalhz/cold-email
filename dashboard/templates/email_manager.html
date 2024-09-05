@@ -10,9 +10,25 @@
 <div class="m-10 bg-white shadow-md rounded flex">
     <div class="w-1/4 p-4 border-r">
         <button id="showSent"
-            class="w-full mt-10 text-gray-600 border px-4 py-2 rounded mb-2 text-left hover:border-animate  text-sm md:text-base">Sent</button>
+            class="w-full mt-10 text-gray-600 border px-4 py-2 rounded mb-2 text-left hover:border-animate text-sm md:text-base flex items-center justify-start">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.4 15.6L21.6 2.4M4.8 17.6L19.2 4M9.6 15.2L15.2 9.6M14.4 10.4L17.6 13.6" />
+            </svg>
+            Sent
+        </button>
+
         <button id="showScheduled"
-            class="w-full text-gray-600 border px-4 py-2 rounded text-left hover:border-animate  text-sm md:text-base">Scheduled</button>
+            class="w-full text-gray-600 border px-4 py-2 rounded text-left hover:border-animate text-sm md:text-base flex items-center justify-start">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 10h18M3 6h18M3 14h18M3 18h18" />
+            </svg>
+            Scheduled
+        </button>
+
     </div>
     <div class="w-3/4 p-4">
         <table id="emailTable" class="display m-20" style="width:100%">
@@ -26,15 +42,37 @@
                 <!-- Table rows will be dynamically loaded here -->
             </tbody>
         </table>
-        <div id="emailDetails" class="bg-gray-50 p-4 rounded shadow-sm hidden">
+        <div id="emailDetails" class="bg-gray-50 rounded shadow-sm hidden">
             <div class="flex justify-between">
                 <button id="backButton"
-                    class="border btn-xs md:btn-sm btn btn-neutral rounded-lg text-white text-sm md:text-base">Back</button>
-                <div>
+                    class="border btn-xs md:btn-sm btn btn-neutral rounded-lg text-black hover:text-white text-sm md:text-base flex items-center bg-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12H9m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                </button>
+
+
+                <div class="flex">
                     <button id="editButton"
-                        class=" border btn-xs md:btn-sm btn bg-orange-500 hover:bg-orange-600 hover:text-orange-100 rounded-lg text-white text-sm md:text-base">Edit</button>
+                        class="border btn-xs md:btn-sm btn bg-orange-500 hover:bg-orange-600 hover:text-orange-100 rounded-lg text-white text-sm md:text-base flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
+                            <path fill="white"
+                                d="M3 17.25V27h9.75l11.53-11.52L14.53 5.74 3 17.25zm26.11-9.6l-4.75-4.75a2.494 2.494 0 00-3.54 0L17 6.82l8.76 8.76 3.8-3.8a2.494 2.494 0 000-3.54z" />
+                        </svg>
+
+                    </button>
                     <button onclick="showDeleteModal()" id="deleteButton"
-                        class=" border btn-xs md:btn-sm btn bg-red-600 hover:bg-red-700 hover:text-red-100 rounded-lg text-white  text-sm md:text-base">Delete</button>
+                        class="btn-xs md:btn-sm btn bg-red-600 text-white hover:bg-red-700 hover:text-red-100 rounded-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
+                            <path fill="white"
+                                d="M3.75 7.25H26.25V9H3.75V7.25zM6.25 9.75V24.25C6.25 25.49 7.26 26.5 8.5 26.5H21.5C22.74 26.5 23.75 25.49 23.75 24.25V9.75H6.25zM11.25 12.75H13.25V23.25H11.25V12.75zM16.75 12.75H18.75V23.25H16.75V12.75z" />
+                        </svg>
+
+                    </button>
+
                 </div>
             </div>
 
@@ -176,6 +214,7 @@
                     url: `/emails/detail/${id}/`,
                     method: 'GET',
                     success: function (data) {
+                        console.log(data)
                         $('#emailDepartment').text(data.department);
                         $('#emailSubject').text(data.subject);
                         $('#emailContent').html(data.content);

@@ -56,7 +56,7 @@ def send_to_openai(user_input):
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt_text}
         ],
-        # stream=True
+        stream=True
     )
 
     return response
