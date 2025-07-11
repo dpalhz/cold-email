@@ -17,23 +17,23 @@ def generator_view(request):
     return render(request, "generator.html")
 
 def send_to_openai(user_input):
-    company_background = """Algo's Network adalah perusahaan agency yang bertujuan untuk memberikan solusi 
-    kepada business dengan memberikan layanan mengenai Data & AI Solutions, Digital Marketing, Software, 
-    Management Consulting, Media Production. Tujuan dari Algo's Network adalah membantu penerapan transformasi 
-    digital pada bisnis."""
+    company_background = """Alhaza Digital adalah perusahaan konsultan kreatif yang menyediakan layanan
+                            Digital Marketing, Software Development, Business Consulting, dan Media Production. 
+                            Misi Alhaza Digital adalah membantu klien menjalankan transformasi digital dan mencapai hasil bisnis terbaik."""
+
 
     tone = user_input['mode']
 
     if user_input['sendto'] == 'Customers':
-        audience_desc = "Customer perusahaan Algo's Network, yaitu pemilik bisnis, petinggi perusahaan, dan sejenisnya."
+        audience_desc = "Customer perusahaan Alhaza Digital, yaitu pemilik bisnis, petinggi perusahaan, dan sejenisnya."
         tone = "Gunakan kata-kata persuasif sesuai best practice dalam marketing & copywriting."
 
     else:
-        audience_desc = "Karyawan perusahaan Algo's Network"
+        audience_desc = "Karyawan perusahaan Alhaza Digital"
     prompt_text = f"""
     {company_background}
 
-    Anda adalah asisten terbaik di Algo's Network. Buatkan konten email (tanpa subject) yang sesuai dengan detail berikut,
+    Anda adalah asisten terbaik di Alhaza Digital. Buatkan konten email (tanpa subject) yang sesuai dengan detail berikut,
 
     Subject email: {user_input['subject']}
 
@@ -48,7 +48,7 @@ def send_to_openai(user_input):
     Keterangan tambahan:
     1. Gunakan bulletpoints jika diperlukan.
     2. Berikan bahasa yang concise, namun tetap memberikan pesan yang kuat
-    3. Berikan keterangan Algo's Network sebagai sender di bagian bawah email
+    3. Berikan keterangan Alhaza Digital sebagai sender di bagian bawah email
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",

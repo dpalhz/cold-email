@@ -7,16 +7,17 @@
 <div class="m-10 text-2xl font-semibold">
     Dashboard
 </div>
-<div class="m-10 bg-white shadow-md rounded flex">
-    <div class="w-1/4 p-4 border-r">
+<div class="m-10 bg-white shadow-md rounded flex flex-col md:flex-row">
+    <div class="w-full md:w-1/4 p-4 border-r">
+        <h2 class="text-xl font-semibold mb-4">Email Manager</h2>
         <button id="showSent"
-            class="w-full mt-10 text-gray-600 border px-4 py-2 rounded mb-2 text-left hover:border-animate text-sm md:text-base flex items-center justify-start">
+            class="w-full text-gray-600 border px-4 py-2 rounded mb-2 text-left hover:border-animate text-sm md:text-base flex items-center justify-start">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M2.4 15.6L21.6 2.4M4.8 17.6L19.2 4M9.6 15.2L15.2 9.6M14.4 10.4L17.6 13.6" />
             </svg>
-            Sent
+            Sent Emails
         </button>
 
         <button id="showScheduled"
@@ -26,7 +27,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 10h18M3 6h18M3 14h18M3 18h18" />
             </svg>
-            Scheduled
+            Scheduled Emails
         </button>
 
     </div>

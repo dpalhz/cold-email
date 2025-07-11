@@ -2,13 +2,13 @@
 <title>Email List</title>
 {% endblock meta %} {% block content %}
 
-<div class="grid grid-cols-3">
-  <div class="bg-gray-300 mr-5">
+<div class="md:grid md:grid-cols-3">
+  <div class=mr-5">
     {% include 'department_list.html' %}
 
   </div>
-  <div class="col-span-2">
-    <div class="text-2xl font-semibold m-10 ml-0">Email Data</div>
+  <div class="col-span-2 p-10">
+    <div class="text-2xl font-semibold">Email Data</div>
     <table class="table" id="emailTable">
       <thead class="bg-gray-950 text-white">
         <tr>
@@ -69,8 +69,8 @@
       </div>
     </dialog>
 
-    <div class="flex gap-5 justify-between items-start my-5">
-      <div class="flex items-center gap-5">
+    <div class="lg:flex gap-5 justify-between items-start my-5">
+      <div class="flex items-center gap-5 sm:justify-between">
         <a href="{% url 'email_data:download_template' %}"
           class="font-regular text-base text-blue-500 hover:underline hover:text-blue-700">
           Download Template
